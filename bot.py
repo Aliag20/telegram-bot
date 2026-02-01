@@ -2,64 +2,79 @@ import os
 import telebot
 from telebot import types
 
-# --- الإعدادات المركزية ---
+# --- إعدادات الهوية ---
 TOKEN = os.getenv("BOT_TOKEN")
 ADMIN_ID = 8336468616 
 bot = telebot.TeleBot(TOKEN)
 
-# --- قاعدة بيانات الردود العادية (حسب الكلمات المفتاحية) ---
-RESPONSES = {
+# --- قاعدة بيانات الردود الضخمة ---
+DATA = {
     "ar": {
-        "مرحبا": "أهلاً بك أيها المستخدم! كيف يمكنني مساعدتك اليوم؟ 😊",
-        "من انت": "أنا بوت الخدمة التلقائي، أعمل بكفاءة عالية لخدمتك.",
-        "اوامر": "الأوامر المتاحة: /start, /admin (للمطور فقط)",
-        "شكرا": "على الرحب والسعة! أنا هنا دائماً للمساعدة."
+        "start": "🚀 **أهلاً بك في النسخة المطورة!**\n\nأنا بوت الخدمة السريعة، تم تحديثي لأقصى حد. أرسل أي كلمة لأرد عليك فوراً.",
+        "help": "💡 **قائمة المساعدة:**\n- مرحبا: للترحيب\n- من انت: تعريف بالبوت\n- المطور: معلومات المطور\n- الوقت: حالة النظام\n- بنج: قياس السرعة",
+        "responses": {
+            "مرحبا": "أهلاً بك يا غالي! نورت البوت 😊",
+            "من انت": "أنا نظام آلي متطور مصمم لخدمتك بأعلى سرعة ممكنة 🤖",
+            "المطور": "تم تطويري بواسطة القائد @Aliag20 (Architect System) 🛠️",
+            "الوقت": "النظام يعمل بكفاءة 100% منذ آخر تحديث ⏱️",
+            "بنج": "السرعة: 0.001ms (استجابة فورية) ⚡",
+            "شكرا": "واجبنا يا بطل! دائماً في الخدمة ❤️"
+        }
     },
     "en": {
-        "hello": "Hello! How can I help you today? 😊",
-        "who are you": "I am an automated service bot, here to help you.",
-        "commands": "Available commands: /start, /admin (for developers)",
-        "thanks": "You're welcome! I'm always here to help."
+        "start": "🚀 **Welcome to the Ultra Version!**\n\nI am your high-speed service bot. I've been upgraded to the max.",
+        "help": "💡 **Help Menu:**\n- hello: greetings\n- who are you: bot info\n- developer: dev info\n- status: system status\n- ping: speed test",
+        "responses": {
+            "hello": "Hello there! Welcome to the bot 😊",
+            "who are you": "I am an advanced automated system designed to serve you 🤖",
+            "developer": "Developed by the Master @Aliag20 🛠️",
+            "status": "System is running at 100% efficiency ⏱️",
+            "ping": "Speed: 0.001ms (Instant response) ⚡",
+            "thanks": "You're very welcome! Always here for you ❤️"
+        }
     }
 }
 
-# --- ميزة الحماية (فلتر الكلمات) ---
-BANNED_WORDS = ["كلمة_مسيئة1", "كلمة_مسيئة2"]
-
-@bot.message_handler(commands=['start'])
-def start(message):
-    lang = "ar" if message.from_user.language_code == "ar" else "en"
-    welcome = "🚀 تم تفعيل البوت بنظام الردود السريعة!" if lang == "ar" else "🚀 Bot activated with Fast Response system!"
-    bot.reply_to(message, welcome)
-
+# --- لوحة تحكم المطور (Admin Functions) ---
 @bot.message_handler(commands=['admin'])
-def admin(message):
+def admin_panel(message):
     if message.from_user.id == ADMIN_ID:
-        bot.reply_to(message, "🛠️ أهلاً بك يا مطوري في لوحة التحكم (نظام الردود العادية).")
+        markup = types.InlineKeyboardMarkup(row_width=2)
+        btn1 = types.InlineKeyboardButton("📊 إحصائيات", callback_data="stats")
+        btn2 = types.InlineKeyboardButton("📢 إذاعة", callback_data="broadcast")
+        btn3 = types.InlineKeyboardButton("⚙️ الإعدادات", callback_data="settings")
+        markup.add(btn1, btn2, btn3)
+        bot.reply_to(message, "🛠️ **لوحة تحكم المطور المركزية:**\nمرحباً بك يا سيدي، اختر ما تريد إدارته:", reply_markup=markup, parse_mode="Markdown")
+    else:
+        bot.reply_to(message, "❌ نأسف، هذا الأمر مخصص للمطور فقط.")
 
+# --- معالج الرسائل الذكي ---
 @bot.message_handler(func=lambda message: True)
-def handle_messages(message):
-    # 1. نظام الحماية (الأمان أولاً)
-    if any(word in message.text.lower() for word in BANNED_WORDS):
-        bot.delete_message(message.chat.id, message.message_id)
-        return
-
-    # 2. تحديد لغة المستخدم تلقائياً
-    user_lang = "ar" if message.from_user.language_code == "ar" else "en"
-    text = message.text.lower().strip()
-
-    # 3. نظام الردود العادية
-    found_response = False
-    for key, value in RESPONSES[user_lang].items():
-        if key in text:
-            bot.reply_to(message, value)
-            found_response = True
-            break
+def handle_all_messages(message):
+    user_text = message.text.lower().strip()
+    # تحديد اللغة بناءً على النص أو إعدادات المستخدم
+    lang = "ar" if any(char in user_text for char in "أبتثجحخدذرزسشصضطظعغفقكلمنهوي") else "en"
     
-    # 4. رد افتراضي إذا لم يفهم الكلمة
-    if not found_response:
-        default_msg = "عذراً، لم أفهم هذه الكلمة. جرب قول 'مرحبا' أو 'اوامر'." if user_lang == "ar" else "Sorry, I didn't understand. Try saying 'hello' or 'commands'."
-        bot.reply_to(message, default_msg)
+    if user_text in ["/start", "البداية"]:
+        bot.reply_to(message, DATA[lang]["start"], parse_mode="Markdown")
+    elif user_text in ["/help", "مساعدة", "اوامر"]:
+        bot.reply_to(message, DATA[lang]["help"], parse_mode="Markdown")
+    else:
+        # البحث في الردود
+        response = DATA[lang]["responses"].get(user_text)
+        if response:
+            bot.reply_to(message, response)
+        else:
+            # رد ذكي إذا لم توجد الكلمة
+            msg = "عذراً، هذه الكلمة غير مسجلة. أرسل 'مساعدة' لرؤية الكلمات المتاحة." if lang == "ar" else "Sorry, keyword not found. Type 'help' to see available words."
+            bot.reply_to(message, msg)
 
-# تشغيل النظام
+# --- معالج الأزرار (Admin Callbacks) ---
+@bot.callback_query_handler(func=lambda call: True)
+def callback_query(call):
+    if call.data == "stats":
+        bot.answer_callback_query(call.id, "📊 النظام يعمل بكامل طاقته.")
+    elif call.data == "broadcast":
+        bot.answer_callback_query(call.id, "📢 قريباً: ميزة الإذاعة لجميع المستخدمين.")
+
 bot.polling(none_stop=True)
