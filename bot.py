@@ -3,17 +3,21 @@ import telebot
 import google.generativeai as genai
 from telebot import types
 
-# --- الإعدادات (Security & AI) ---
+# --- الإعدادات المطورة (Auto-Detect Key) ---
 TOKEN = os.getenv("BOT_TOKEN")
-# ملاحظة: سأعلمك لاحقاً كيف تحصل على مفتاح Gemini وتضعه في Koyeb
-GEMINI_KEY = os.getenv("GEMINI_API_KEY") 
+# سيحاول الكود قراءة المفتاح بكل الأسماء المحتملة لضمان العمل
+GEMINI_KEY = os.getenv("GEMINI_API_KEY") or os.getenv("GEMINI_KEY")
 
 ADMIN_ID = 8336468616 
 bot = telebot.TeleBot(TOKEN)
 
-# تهيئة محرك الذكاء الاصطناعي
-genai.configure(api_key=GEMINI_KEY)
-model = genai.GenerativeModel('gemini-pro')
+# التأقق من وجود المفتاح قبل التشغيل
+if GEMINI_KEY:
+    genai.configure(api_key=GEMINI_KEY)
+    model = genai.GenerativeModel('gemini-pro')
+else:
+    print("⚠️ Warning: Gemini API Key not found!")
+    
 
 # --- فلتر الكلمات (Shield) ---
 BANNED_WORDS = ["كلمة1", "كلمة2"]
@@ -42,3 +46,4 @@ def ai_logic(message):
         bot.reply_to(message, "📡 عذراً، المحرك الذكي بانتظار مفتاح الـ API للعمل.")
 
 bot.polling(none_stop=True)
+
