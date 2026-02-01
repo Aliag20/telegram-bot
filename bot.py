@@ -19,7 +19,7 @@ from telegram.ext import (
 from telegram.constants import ParseMode
 
 # ========== إعدادات البوت ==========
-BOT_TOKEN = "TOKEN_BOT_TELEGRAM_HERE"  # ضع توكن البوت هنا
+BOT_TOKEN = "8336468616:AAGLhhvmNnPv5BB1gZxSJWCXjnsMHAYmMgw"  # ضع توكن البوت هنا
 ADMIN_IDS = [8086158965]  # ضع آيدي المطور هنا [123456789, 987654321]
 MAIN_ADMIN_ID = None  # ضع آيدي المطور الرئيسي هنا (اختياري)
 
@@ -764,3 +764,4 @@ if __name__ == "__main__":
         print("\n\n🛑 تم إيقاف البوت.")
     except Exception as e:
         print(f"❌ خطأ في تشغيل البوت: {e}")
+
