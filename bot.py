@@ -4,7 +4,7 @@ from telebot import types
 
 # --- 🛠️ منطقة التحكم (ضع رقمك هنا) ---
 # ملاحظة: إذا رفضك البوت، أرسل كلمة 'هويتي' ليعطيك الرقم الصحيح
-ADMIN_ID = 8336468616 
+ADMIN_ID = 8086158965 
 
 TOKEN = os.getenv("BOT_TOKEN")
 bot = telebot.TeleBot(TOKEN)
@@ -59,3 +59,4 @@ def smart_reply(message):
             bot.reply_to(message, "❓ أرسل 'مساعدة' لرؤية ما يمكنني فعله.")
 
 bot.polling(none_stop=True)
+
