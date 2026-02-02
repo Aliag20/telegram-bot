@@ -1,0 +1,25 @@
+# بيانات البوت
+bot_data.json
+action_logs.txt
+backups/
+logs/
+
+# بيئات بايثون
+__pycache__/
+*.pyc
+.env
+venv/
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# نظام
+.DS_Store
+Thumbs.db
